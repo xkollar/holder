@@ -96,7 +96,14 @@ module bokken() {
     }
 
     tsuka();
-    blade();
+    difference() {
+        blade();
+        translate([-5,0,31.3]) rotate([0,-65,0]) cube(10,center=true);
+        translate([5,0,31.3]) rotate([0,65,0]) cube(10,center=true);
+        translate([0,0,28]) rotate([0,-90,0]) linear_extrude(5, center=true) bezier([
+            [-2,0],[1,0],[2,1], [2,2] 
+            ], extra=[[3,2],[3,0]]);
+    }
 }
 
 module holder() {
