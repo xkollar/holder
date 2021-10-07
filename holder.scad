@@ -76,7 +76,13 @@ module bokken() {
         translate([0,0,-10]) linear_extrude(10) base();
     }
 
-    module blade() {
+    module tsuba() {
+        translate ([0,0.25,0])
+        linear_extrude(0.1, center=true)
+        square(3, center=true);
+    }
+
+    module blade0() {
         module profile() {
             linear_extrude(0.000001) intersection() {
                 base();
@@ -95,14 +101,45 @@ module bokken() {
         }
     }
 
+    module blade()
+    {
+        intersection() {
+            {
+                translate([0,-0.5,0])
+                rotate([180,-90,0])
+                translate([0,-399.75,0])
+                rotate_extrude(angle=90,$fn=10*$fn)
+                translate ([-0.5+399.75,0])
+                scale(-1)
+                intersection() {
+                    hull() {
+                        circle(d=1);
+                        translate([0.5,0]) circle(d=1);
+                    }
+                    hull() {
+                        circle(d=1);
+                        polygon([[0,0.5],[0.4,0.5],[1,0.05],[1,-0.05],[0.4,-0.5,],[0,-0.5]]);
+                    }
+                }
+            };
+            translate([-5,-5,0])
+            cube([10,10,30]);
+        }
+    }
+
     tsuka();
-    difference() {
-        blade();
+    color("#600") tsuba();
+    color("yellow") difference() {
+        intersection() {
+            blade();
+            translate([0,0,28]) rotate([0,-90,0])
+            linear_extrude(5, center=true)
+            bezier([
+                [-5,0],[1,0],[2,1], [2,2.5]
+                ], extra=[[-30,2.5],[-30,-10]]);
+        }
         translate([-5,0,31.3]) rotate([0,-65,0]) cube(10,center=true);
         translate([5,0,31.3]) rotate([0,65,0]) cube(10,center=true);
-        translate([0,0,28]) rotate([0,-90,0]) linear_extrude(5, center=true) bezier([
-            [-2,0],[1,0],[2,1], [2,2] 
-            ], extra=[[3,2],[3,0]]);
     }
 }
 
@@ -130,7 +167,7 @@ module scene() {
         i = 2;
         // translate([i==0 ? 0 : 05,elevation,0]) color("red") bo();
         // translate([i==1 ? 0 : 10,elevation,0]) color("green") hanbo();
-        translate([i==2 ? 0 : 15,elevation,-10]) rotate([1.1,0,0]) color("yellow") bokken();
+        translate([i==2 ? 0 : 15,elevation,-10]) rotate([1.1,0,0]) bokken();
         translate ([0,0,-3]) holder();
         % translate ([0,0,3]) holder();
     } else {
@@ -139,3 +176,6 @@ module scene() {
 }
 
 scale(inch_in_cm) scene();
+
+module skip() {
+}
