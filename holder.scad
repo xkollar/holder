@@ -143,7 +143,7 @@ module bokken() {
     }
 }
 
-module holder() {
+module holder1() {
     linear_extrude(0.5, center=true)
     scale(0.22) difference() {
         bezier([
@@ -161,12 +161,35 @@ module holder() {
     }
 }
 
+module holder2() {
+//    bezier(
+//        [[2,0],[2,5],[-2,5],[-2,0]
+//        ],
+//        extra=[[0,0]]);
+    profile = bezier([[2,0],[2,5],[-2,5],[-2,0]],steps=5);
+    trajectory = bezier([[0,0,0],[0,0,1],[0,1,1],[0,1,5]]);
+
+    for (x = [1:len(trajectory)]) {
+        d0 = trajectory[x-1];
+        d1 = trajectory[x];
+        s1 = [for (p=profile) each
+            [[p.x,p.y,0]+d0, [p.x,p.y,0]+d1]];
+        l = len(s1);
+        s2 = [for (i=[0:1:l]) [i,(i+1)%l,(i+2)%l]];
+        polyhedron(s1,s2);
+    }
+}
+
+module holder() {
+    holder2();
+}
+
 module scene() {
     if ($preview) {
         elevation = 2.95+loop;
         i = 2;
-        // translate([i==0 ? 0 : 05,elevation,0]) color("red") bo();
-        // translate([i==1 ? 0 : 10,elevation,0]) color("green") hanbo();
+        translate([i==0 ? 0 : 05,elevation,0]) color("red") bo();
+        translate([i==1 ? 0 : 10,elevation,0]) color("green") hanbo();
         translate([i==2 ? 0 : 15,elevation,-10]) rotate([1.1,0,0]) bokken();
         translate ([0,0,-3]) holder();
         % translate ([0,0,3]) holder();
